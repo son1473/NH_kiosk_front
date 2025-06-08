@@ -17,7 +17,7 @@ const OrderMenu = ({
   const borderColor = beverageNum > 0 ? "blue" : "rgba(201, 216, 255, 1)";
 
   return (
-    <Box sx={{ width: "100%",  }}>
+    <Box sx={{ width: "100%" }}>
       <Button
         onClick={() => {
           setBeverageNum(beverageNum + 1);
@@ -34,7 +34,7 @@ const OrderMenu = ({
           // height: "110px",
           textAlign: "center",
           font: "3vh Inter, sans-serif ",
-          color:'black',
+          color: "black",
           fontWeight: "bold",
           marginBottom: "5px",
           fontFamily: "Gowum",
@@ -74,11 +74,12 @@ const OrderMenu = ({
             }}
             startIcon={
               <svg
-              style={{maxWidth: '45px',
-              maxHeight: '45px',
-              width: '6vh',
-              height: '6vh',
-            }}
+                style={{
+                  maxWidth: "45px",
+                  maxHeight: "45px",
+                  width: "6vh",
+                  height: "6vh",
+                }}
                 viewBox="0 0 45 45"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -113,10 +114,10 @@ const OrderMenu = ({
                 borderRadius: "50px",
                 width: "7vh",
                 height: "7vh",
-                maxWidth: '45px',
-                maxHeight: '45px',
-              // width: '6vh',
-              // height: '6vh',
+                maxWidth: "45px",
+                maxHeight: "45px",
+                // width: '6vh',
+                // height: '6vh',
                 color: buttonColor,
                 fontFamily: "Gowum",
                 fontWeight: "bold",
@@ -151,11 +152,12 @@ const OrderMenu = ({
             }}
             startIcon={
               <svg
-              style={{maxWidth: '45px',
-              maxHeight: '45px',
-              width: '6vh',
-              height: '6vh',
-            }}
+                style={{
+                  maxWidth: "45px",
+                  maxHeight: "45px",
+                  width: "6vh",
+                  height: "6vh",
+                }}
                 viewBox="0 0 46 46"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -180,8 +182,14 @@ const OrderMenu = ({
             }
           ></Button>
         </Box>
-        <Typography sx={{ fontWeight: "bold", fontFamily: "Gowum",
-        fontSize: {xs: "4.5vw", sm: "3.5vw", md:"2vw", lg:"2vw"}, textAlign:'start' }}>
+        <Typography
+          sx={{
+            fontWeight: "bold",
+            fontFamily: "Gowum",
+            fontSize: { xs: "4.5vw", sm: "3.5vw", md: "2vw", lg: "2vw" },
+            textAlign: "start",
+          }}
+        >
           {(beverageNum * MENU[menuName]).toLocaleString()}
         </Typography>
       </Box>

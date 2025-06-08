@@ -1,8 +1,0 @@
-.root {
-  /* height: 100vh; 반응형할 때 min으로 해야하구나.*/ 
-  min-height: 100vh; 
-  display: flex;
-  justify-content: center;
-
-  align-items: center;
-}
