@@ -12,40 +12,53 @@ import {
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-// 행 종류
-const columns: GridColDef<[number]>[] = [
-  { field: "orderNum", headerName: "주문 번호", align: "center" },
-  {
-    field: "orderDetails",
-    headerName: "주문 내역",
-    headerAlign: "center",
-    editable: true,
-    width: 500,
-  },
-  {
-    field: "status",
-    headerName: "주문 상태",
-    width: 120,
-  },
-  { field: "totalPrice", headerName: "결제 금액", type: "number" },
-  {
-    field: "created_at",
-    headerName: "주문 시간",
-    type: "string",
-    width: 120,
-    valueGetter: (params: any) => {
-      return new Date(params.seconds * 1000).toLocaleString("ko-KR", {
-        // month: 'short',
-        // day: 'numeric',
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-    },
-  },
-];
-
 function OrderList() {
+  // 행 종류
+  const columns: GridColDef[] = [
+    { field: "orderNum", headerName: "주문 번호", align: "center" },
+    {
+      field: "orderDetails",
+      headerName: "주문 내역",
+      headerAlign: "center",
+      editable: true,
+      width: 500,
+    },
+    {
+      field: "status",
+      headerName: "주문 상태",
+      width: 120,
+    },
+    { field: "totalPrice", headerName: "결제 금액", type: "number" },
+    {
+      field: "created_at",
+      headerName: "주문 시간",
+      type: "string",
+      width: 120,
+      valueGetter: (params: any) => {
+        return new Date(params.seconds * 1000).toLocaleString("ko-KR", {
+          // month: 'short',
+          // day: 'numeric',
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+        });
+      },
+    },
+    {
+      field: "actions",
+      headerName: "주문 삭제",
+      width: 120,
+      renderCell: (params) => (
+        <Button
+          sx={{ fontSize: "0.8rem" }}
+          onClick={() => handleDeleteSelectedRows(params.row.id)}
+          disabled={!selectionModel.includes(params.row.id)}
+        >
+          삭제
+        </Button>
+      ),
+    },
+  ];
   const [fetchedRows, setFetchedRows] = useState<any[]>([]);
   const [todoOrders, setTodoOrders] = useState<any[]>([]);
   const [inProgressOrders, setInProgressOrders] = useState<any[]>([]);
@@ -64,32 +77,27 @@ function OrderList() {
     setSelectionModel(params);
   };
 
-  const handleDeleteSelectedRows = async () => {
+  const handleDeleteSelectedRows = async (event?: React.MouseEvent, id?: string) => {
+    const idsToDelete = id ? [id] : selectionModel;
+    if (idsToDelete.length === 0) return;
+    
     if (
       window.confirm("삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?")
     ) {
-      // 선택된 행 삭제 로직
-      const updatedRows = fetchedRows.filter(
-        row => !selectionModel.includes(row.id)
-      );
-      // Firebase에서 선택된 문서 삭제
       try {
         const batch = writeBatch(db);
-
-        selectionModel.forEach(async selectedId => {
-          // await deleteDoc(doc(db, 'orders', selectedId));
-          const docRef = doc(db, "orders", selectedId);
-          // batch를 사용해 여러 개 삭제를 1번의 쓰기로 적용
+        idsToDelete.forEach(id => {
+          const docRef = doc(db, "orders", id);
           batch.delete(docRef);
         });
         await batch.commit();
-        console.log("선택된 행을 Firebase에서 삭제했습니다.", updatedRows);
+        
+        const updatedRows = fetchedRows.filter(row => !idsToDelete.includes(row.id));
+        setFetchedRows(updatedRows);
+        await getOrders();
       } catch (error) {
         console.error("삭제 중 오류가 발생했습니다:", error);
       }
-      // 상태 초기화
-      setFetchedRows(updatedRows);
-      await getOrders(); // 대시보드 상태도 최신으로 갱신
     }
   };
 
@@ -222,16 +230,23 @@ function OrderList() {
               minHeight: "60px",
             }}
           >
-            <Typography sx={{ fontSize: "2rem", fontFamily: "Gowum" }}>
+            <Typography 
+              sx={{ 
+                fontSize: "2rem", 
+                fontFamily: "Gowum",
+                cursor: "pointer",
+              }}
+              onClick={() => window.location.reload()}
+            >
               ✨남현 카페 주문목록☕
             </Typography>
             <Button
-              color="primary"
+              color="success"
               sx={{
                 boxShadow: "0px 1px 1px 0px rgba(0, 0, 0, 0.10)",
-                border: "1px solid #0085FF",
+                border: "1px solid #2E7D32",
                 borderRadius: "10px",
-                padding: "5px 5px",
+                padding: "7px 7px",
                 marginTop: "8px",
                 marginBottom: "8px",
                 textAlign: "center",
@@ -241,7 +256,7 @@ function OrderList() {
               }}
               onClick={() => goToOrder()}
             >
-              주문 페이지 이동→
+              주문 페이지 이동👉🏻
             </Button>
             <Box
               sx={{
@@ -251,14 +266,14 @@ function OrderList() {
                 alignItems: "baseline",
               }}
             >
-              {selectionModel.length > 0 && ( // 선택된 행이 있을 때만 버튼이 나타남
+              {/* {selectionModel.length > 0 && ( // 선택된 행이 있을 때만 버튼이 나타남
                 <Button
                   sx={{ fontSize: "0.8rem" }}
                   onClick={handleDeleteSelectedRows}
                 >
                   주문 삭제
                 </Button>
-              )}
+              )} */}
               <Typography sx={{ fontSize: "1.4rem", fontFamily: "Gowum" }}>
                 총 판매액:
               </Typography>
@@ -354,9 +369,13 @@ function OrderList() {
                                   : status === "진행중"
                                   ? "#42A5F5"
                                   : "#66BB6A"
-                                }`,
-                              textDecoration: `${status === "완료" ? "line-through" : "none"}`,
-                              color: `${status === "완료" ? "#888888" : "black"}`,
+                              }`,
+                              textDecoration: `${
+                                status === "완료" ? "line-through" : "none"
+                              }`,
+                              color: `${
+                                status === "완료" ? "#888888" : "black"
+                              }`,
                               backgroundColor: "#FAFAFA",
                               paddingX: 2.5,
                               paddingY: 2,
