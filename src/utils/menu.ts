@@ -11,7 +11,7 @@ export const MENU: StringNumberDictionary= {
   "아이스티(ICE)": 3000,
   "레몬에이드(ICE)": 3000,
   "슬러시(ICE)": 4000,
-  "쿠키": 2000,
+  "배달": 0,
 };
 
 export const menuKey = Object.keys(MENU);
