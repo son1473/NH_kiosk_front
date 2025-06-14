@@ -91,7 +91,7 @@ function LandingOrder() {
 
   // 주문 접수 코드
   const handleSubmit = async () => {
-    // 총 가격 0원 이상일 경우에만 전송
+    // 총 가격 0원 초과일 경우에만 전송
     if (totalPrice > 0) {
       const currentTime = serverTimestamp(); // 현재 시간 가져오기
 
@@ -117,6 +117,8 @@ function LandingOrder() {
       resetAllValue();
       // 보냈으면 새로 주문 번호 가져오기
       getOrderId();
+    } else {
+      alert("총 결제금액이 0원이기에, 주문할 수 없습니다.");
     }
   };
 
@@ -187,7 +189,9 @@ function LandingOrder() {
                 fontFamily: "Holtwood One SC",
                 fontWeight: "bold",
                 textAlign: "center",
+                cursor: "pointer",
               }}
+              onClick={() => window.location.reload()}
             >
               💖해외선교카페✨
             </Typography>
