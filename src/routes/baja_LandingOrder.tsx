@@ -1,4 +1,12 @@
-import { Box, Button, Container, Grid, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { MENU, menuKey } from "utils/menu";
 import OrderMenu from "./../components/baja/OrderMenu";
@@ -27,6 +35,7 @@ function LandingOrder() {
   const [orderNum, setOrderNum] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [orderDetails, setOrderDetails] = useState<string>("");
+  const [toastOpen, setToastOpen] = useState(false);
 
   const resetAllValue = () => {
     setMixCoffeeIceNum(0);
@@ -110,6 +119,8 @@ function LandingOrder() {
           "새로운 주문이 성공적으로 추가되었습니다. 문서 ID:",
           docRef.id
         );
+        setToastOpen(true);
+        setTimeout(() => setToastOpen(false), 3000);
       } catch (error) {
         console.error("주문 추가 중 오류 발생:", error);
       }
@@ -440,6 +451,29 @@ function LandingOrder() {
         </Grid>
         {/* </Box> */}
       </Container>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={3000}
+        onClose={() => setToastOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{
+          "& .MuiAlert-root": {
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+            fontFamily: "Gowum",
+            padding: "16px",
+            borderRadius: "10px",
+          },
+        }}
+      >
+        <Alert
+          onClose={() => setToastOpen(false)}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
+          주문이 완료 되었습니다
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

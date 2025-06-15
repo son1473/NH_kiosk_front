@@ -1,4 +1,4 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Typography, Snackbar, Alert } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -48,8 +48,9 @@ function OrderList() {
       field: "actions",
       headerName: "주문 삭제",
       width: 120,
-      renderCell: (params) => (
+      renderCell: params => (
         <Button
+          color="error"
           sx={{ fontSize: "0.8rem" }}
           onClick={() => handleDeleteSelectedRows(params.row.id)}
           disabled={!selectionModel.includes(params.row.id)}
@@ -68,6 +69,7 @@ function OrderList() {
     { field: "orderNum", sort: "desc" },
   ]);
   const [selectionModel, setSelectionModel] = React.useState<any[]>([]);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
   const handleSortChange = (newSortModel: any) => {
     setSortModel(newSortModel);
@@ -82,7 +84,9 @@ function OrderList() {
     if (idsToDelete.length === 0) return;
     
     if (
-      window.confirm("삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?")
+      window.confirm(
+        "⭐선택한 주문이 모두 삭제됩니다.⭐\n삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?"
+      )
     ) {
       try {
         const batch = writeBatch(db);
@@ -91,9 +95,12 @@ function OrderList() {
           batch.delete(docRef);
         });
         await batch.commit();
-        
-        const updatedRows = fetchedRows.filter(row => !idsToDelete.includes(row.id));
+
+        const updatedRows = fetchedRows.filter(
+          row => !idsToDelete.includes(row.id)
+        );
         setFetchedRows(updatedRows);
+        setSnackbarOpen(true);
         await getOrders();
       } catch (error) {
         console.error("삭제 중 오류가 발생했습니다:", error);
@@ -428,6 +435,20 @@ function OrderList() {
           </Box>
         </DragDropContext>
       </Container>
+    <Snackbar
+      open={snackbarOpen}
+      autoHideDuration={3000}
+      onClose={() => setSnackbarOpen(false)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert 
+        onClose={() => setSnackbarOpen(false)} 
+        severity="error"
+        sx={{ width: '100%' }}
+      >
+        삭제가 완료되었습니다.
+      </Alert>
+    </Snackbar>
     </React.Fragment>
   );
 }
